@@ -2,62 +2,61 @@
 Steven Kalis
 11/30/2025
 IS350
-Semester Project - Main Menu GUI
-Description: The home menu the user interfaces with
+Semester Project - Main.py
+Description: 
 '''
 import tkinter as tk
 from tkinter import ttk
 import room
+import windows
 
-rooms = []
+
 
 def mainMenu():
-    root = tk.Tk()
-    root.title("Arlington Inn and Suites Replenishment System")
-    root.geometry("500x300")
+    app = windows.initialize()
+    app.mainloop()
 
-    #grid setup
-    root.rowconfigure(0, weight=1)
-    root.rowconfigure(1, weight=1)
-    root.rowconfigure(2, weight=1)
-    root.columnconfigure(0, weight=1)
-    root.columnconfigure(1, weight=1)
-    root.columnconfigure(2, weight=1)
+    
+#Returns the list of rooms from the rooms class
+def generateRooms():
+    rooms = []
+    count = 0
+    while count < 42:
+        if count < 21: 
+            rooms.append(room.Room()) #Build single rooms into array
+            
+        else:
+            rooms.append(room.DeluxeRoom()) #Builds deluxe rooms after single rooms
+        count += 1
+    
+    return rooms
 
-    #Header
-    lblHeader = tk.Label(root, text="Welcome to the replenishment system")
-    lblHeader.grid(column=0, row=0, sticky=tk.EW, padx=5, pady=5)
+#Takes the rooms list and compares how much we have to how much we should have
+def getInventoryStatus(roomList):
+    invTP = 0
+    invBS = 0
+    invShmp = 0
+    invBdW = 0
+    invSoap = 0
+    invRb = 0
+    invRefresh = 0
+    
+    
+    for count in range (len(roomList)):
+        #Count how many we have
+        invTP += roomList[count].getToiletPaper()
+        invBS += roomList[count].getBedSheets()
+        invShmp += roomList[count].getShampoo()
+        invBdW += roomList[count].getBodyWash()
+        invSoap += roomList[count].getSoap()
+        if(count > 20):
+            invRb += roomList[count].getRobe()
+            invRefresh += roomList[count].getRefreshments()
+        count+=1
+    return f"Inventory Report:\nToilet Paper:\t\t{invTP}/42\nBed Sheets:\t\t{invBS}/168\nShampoo:\t\t{invShmp}/42\nBody Wash:\t\t{invBdW}/42\nSoap:\t\t{invSoap}/42\nRobes:\t\t{invRb}/24\nRefreshments:\t\t{invRefresh}/144"
 
-    #Label for selection
-    lblSelection = tk.Label(root, text="Please select which item to replenish:")
-    lblSelection.grid(column=0, row=1, sticky=tk.EW, padx=5, pady=5)
-
-    #List of replenishment items
-   
-
-    #Creates 42 room classes into an array. Assume there are 21 single and 21 double rooms
-    # count = 0
-    # while count < 41:
-    #     if count < 22: 
-    #         rooms.append(room.Room()) #Build single rooms into array
-    #     else:
-    #         rooms.append(room.DeluxeRoom()) #Builds deluxe rooms after single rooms
-    # count += 1
-    #TODO: Display Inventory List
-
-    selectedItem = tk.StringVar()
-    lstInventory = ttk.Combobox(root, textvariable=selectedItem)
-    lstInventory["values"] = ("Toilet Paper", "Bed Sheets", "Shampoo", "Conditioner", "Body Wash", "Soap", "Bath Robes", "Refreshments")
-    lstInventory["state"] = "readonly"
-    lstInventory.grid(column=1, row=1, sticky=tk.EW, padx=5, pady=5)
-
-    #Button to start process for the selected item
-    btnBegin = ttk.Button(root, text="Replenish")
-    btnBegin.grid(column=2, row=2, sticky=tk.EW, padx=5, pady=5)
-
-    root.mainloop()
-
-#def generateRooms()
 
 if __name__ == "__main__":
     mainMenu()
+
+    
