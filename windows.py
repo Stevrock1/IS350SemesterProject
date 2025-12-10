@@ -14,6 +14,7 @@ import main
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
+from datetime import date,timedelta
 rooms = []
 updatedInventory = []
 class initialize(tk.Tk):
@@ -99,19 +100,21 @@ class orderItems(tk.Frame):
 
     def purchaseOrder(self,tp, bs, shmp, bdw, soap, rb, refresh, lbl):
         lbl.config(text="Ordered!")
-        count = 0
-        while count < 42:
-            if count < 21: 
-                updatedInventory.append(tp) 
-                updatedInventory.append(bs) 
-                updatedInventory.append(shmp) 
-                updatedInventory.append(bdw) 
-                updatedInventory.append(soap) 
-                
-            else:
-                updatedInventory.append(rb) 
-                updatedInventory.append(refresh) 
-            count += 1
+        if int(tp.get()) != 0:
+            updatedInventory.append(f"Toilet Paper:\t\t\t\t{main.getInventoryStatus(rooms,component="TP")}\t\t\t\t{str(int(tp.get()))}")
+        if int(bs.get()) != 0: 
+            updatedInventory.append(f"Bed Sheets:\t\t\t\t\t{main.getInventoryStatus(rooms,component="BS")}\t\t\t\t{str(int(bs.get()))}")
+        if int(shmp.get()) != 0:
+            updatedInventory.append(f"Shampoo:\t\t\t\t\t{main.getInventoryStatus(rooms,component="Shmp")}\t\t\t\t{str(int(shmp.get()))}") 
+        if int(bdw.get()) != 0:
+            updatedInventory.append(f"Body Wash:\t\t\t\t\t{main.getInventoryStatus(rooms,component="BdW")}\t\t\t\t{str(int(bdw.get()))}") 
+        if int(soap.get()) != 0:
+            updatedInventory.append(f"Soap:\t\t\t\t\t\t{main.getInventoryStatus(rooms,component="Soap")}\t\t\t\t{str(int(soap.get()))}")
+        if int(rb.get()) != 0:
+            updatedInventory.append(f"Robes:\t\t\t\t\t\t{main.getInventoryStatus(rooms,component="Rb")}\t\t\t\t{str(int(rb.get()))}")
+        if int(refresh.get()) != 0:
+            updatedInventory.append(f"Refreshments:\t\t\t\t{main.getInventoryStatus(rooms,component="Refresh")}\t\t\t\t{str(int(refresh.get()))}") 
+
 
         
 
@@ -121,7 +124,11 @@ class orderItems(tk.Frame):
 
         global tpMultiplier, bsMultiplier, soapMultiplier, refreshMultiplier
 
-        
+        #TODO: Fix issue with Radio Buttons if I can
+        #I removed the value = out of the IntVar, currently the ChangeAmount is being ran only on startup, not on a radio button press, try to fix that
+        #If not, revert back to value= in the IntVars for the presentation
+
+
         #--------Grid Labels---------------
         lblMaterials = ttk.Label(self, text="Raw Materials:")
         lblMaterials.grid(column=0, row=0, sticky=tk.EW)
@@ -147,7 +154,7 @@ class orderItems(tk.Frame):
         lblToiletPaper.grid(column=0, row=1, sticky=tk.EW)
         
         #Radio Buttons to select the kind to purchase
-        tpMultiplier = tk.StringVar(value=8)
+        tpMultiplier = tk.IntVar(value=8)
         rdoTPEight = ttk.Radiobutton(self, text="8F", value=8, variable=tpMultiplier)
         rdoTPEight.grid(column=1, row=1, sticky=tk.EW)
         rdoTPTwelve = ttk.Radiobutton(self, text="12F", value=12, variable=tpMultiplier) 
@@ -175,7 +182,7 @@ class orderItems(tk.Frame):
         lblBedSheets = ttk.Label(self, text="Bed Sheets")
         lblBedSheets.grid(column=0, row=2, sticky=tk.EW)
         #Radio Buttons to select the kind to purchase
-        bsMultiplier = tk.StringVar(value=2)
+        bsMultiplier = tk.IntVar(value=4)
         rdoBSTwo = ttk.Radiobutton(self, text="2F", value=2, variable=bsMultiplier)
         rdoBSTwo.grid(column=1, row=2, sticky=tk.EW)
         rdoBSFour = ttk.Radiobutton(self, text="4F", value=4, variable=bsMultiplier) 
@@ -246,7 +253,7 @@ class orderItems(tk.Frame):
         lblSoap = ttk.Label(self, text="Soap")
         lblSoap.grid(column=0, row=5, sticky=tk.EW)
         #Radio Buttons to select the kind to purchase
-        soapMultiplier = tk.StringVar(value=5)
+        soapMultiplier = tk.IntVar(value=5)
         rdoSoapFive = ttk.Radiobutton(self, text="5F", value=5, variable=soapMultiplier)
         rdoSoapFive.grid(column=1, row=5, sticky=tk.EW)
         rdoSoapTen = ttk.Radiobutton(self, text="10F", value=10, variable=soapMultiplier) 
@@ -295,7 +302,7 @@ class orderItems(tk.Frame):
         lblRefresh = ttk.Label(self, text="Refreshments")
         lblRefresh.grid(column=0, row=7, sticky=tk.EW)
 
-        refreshMultiplier = tk.StringVar(value=6)
+        refreshMultiplier = tk.IntVar(value=24)
         rdoRefreshSix = ttk.Radiobutton(self, text="6F", value=6, variable=refreshMultiplier)
         rdoRefreshSix.grid(column=1, row=7, sticky=tk.EW)
         rdoRefreshTwentyFour = ttk.Radiobutton(self, text="24F", value=24, variable=refreshMultiplier) 
@@ -327,7 +334,7 @@ class orderItems(tk.Frame):
         lblOrderStatus.grid(column=7, row=8, sticky=tk.EW, padx=20)
 
         btnPurchaseOrder = ttk.Button(self, text="Order",
-        command= lambda : self.purchaseOrder(tpAmount,bsAmount.get,shmpAmount.get,bdWAmount.get,soapAmount.get,rbAmount.get,refreshAmount.get,lblOrderStatus))
+        command= lambda : self.purchaseOrder(tpAmount,bsAmount,shmpAmount,bdWAmount,soapAmount,rbAmount,refreshAmount,lblOrderStatus))
         btnPurchaseOrder.grid(column=6, row=8, sticky=tk.EW, padx=5, pady=5)
 
 
@@ -349,22 +356,29 @@ class viewInvoice(tk.Frame):
             ("All Files", "*."),
             ("Text Document", "*.txt")
         ]
-        file_path = filedialog.asksaveasfile(filetypes=files, defaultextension=files)
-
+        
+        today = date.today()
+        nextWeek = today + timedelta(weeks=1)
+        file_path = filedialog.asksaveasfilename(filetypes=files, defaultextension=files,initialfile=f"PlannedOrderSchedule_{today.strftime("%m-%d-%Y")}.txt")
         if file_path:
-                try:
-                    with open(file_path,'w') as file:
-                        file.write()
-                except Exception as e:
-                    print(f"Error creating file: {e}")
+               
+            with open(file_path,'w') as file:
+                strFile = f"Planned Order Schedule:\n-----------------------------------------------------------------\nItem Description\t|\t{today.strftime("%m/%d/%Y")}\t|\t{nextWeek.strftime("%m/%d/%Y")}\n-----------------------------------------------------------------\n"
+                for item in updatedInventory:
+                    strFile += f"{item}\n"
+                file.write(strFile)
+                   
+                
      
      def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         
+        lblSavePoS = ttk.Label(self, text="Select the Save button to Download a Planned Order Schedule based on your selections")
+        lblSavePoS.grid(column=3, row=0, sticky=tk.EW)
         #Button to save planned order receipts
         btnBackToOrder = ttk.Button(self, text="Save",
         command= lambda : self.ButtonSaveEvent())
-        btnBackToOrder.grid(column=0, row=1, sticky=tk.EW, padx=5, pady=5)
+        btnBackToOrder.grid(column=3, row=7, sticky=tk.EW, padx=5, pady=5)
 
 
         #Get back to the Order Items screen
