@@ -39,6 +39,7 @@ class DeluxeRoom(Room):
         super().__init__()
         self.bedSheets = random.randint(0,8) #Two Beds, same stuff
         self.robe = random.randint(0,2) #Deluxe room has two robes that can be used
+        
         self.refreshments = random.randint(0,6) #Refrigerator includes up to 6 refreshments
     
     def getRobe(self):
